@@ -21,6 +21,7 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "events")
+@SecondaryTable(name = "event_locations", pkJoinColumns = @PrimaryKeyJoinColumn(name = "event_id"))
 public class Event {
     @Id
     @Column(name = "id", nullable = false)
@@ -39,18 +40,22 @@ public class Event {
     @Column(name = "description")
     private String description;
 
-    @JoinColumn(name = "category_id")
-    private Long categoryId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", insertable = false, updatable = false, nullable = false)
+    @ToString.Exclude
+    private Category category;
 
-    @Column(name = "created_on", insertable = false, updatable = false)
+    @Column(name = "created", insertable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdOn;
 
     @Column(name = "event_date")
     private LocalDateTime eventDate;
 
-    @JoinColumn(name = "initiator_id")
-    private Long initiatorId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "initiator_id", insertable = false, updatable = false, nullable = false)
+    @ToString.Exclude
+    private User initiator;
 
     @Column(name = "paid")
     private boolean paid;
@@ -71,28 +76,6 @@ public class Event {
     @Embedded
     private Location location;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id")
-    @ToString.Exclude
-    private List<Request> requests;
-
     @ManyToMany(mappedBy = "events")
-    @ToString.Exclude
     private Set<Compilation> compilations;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "initiator_id", insertable = false, updatable = false, nullable = false)
-    @ToString.Exclude
-    private User initiator;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", insertable = false, updatable = false, nullable = false)
-    @ToString.Exclude
-    private Category category;
-
-    public Long getConfirmedRequests() {
-        return requests.stream()
-                .filter(request -> request.getStatus().equals(RequestStatus.CONFIRMED))
-                .count();
-    }
 }

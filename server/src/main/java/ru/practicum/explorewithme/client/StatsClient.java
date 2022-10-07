@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 
 @Service
 public class StatsClient extends BaseClient {
-    private final static String APP = "ExploreWithMe";
-    private final static String serverUrl = "${stats-server.url}";
+    private final static String APP = "explore-with-me-server";
+    private final static String serverUrl = "http://localhost:9090";
 
     @Autowired
     public StatsClient(RestTemplateBuilder builder) {

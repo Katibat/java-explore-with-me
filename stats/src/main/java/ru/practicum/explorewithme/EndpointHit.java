@@ -1,6 +1,7 @@
 package ru.practicum.explorewithme;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table (name = "statistics")
+@Table (name = "stats")
 public class EndpointHit {
     @Id
     @Column(name = "id")
@@ -19,5 +20,6 @@ public class EndpointHit {
     private String app; // Идентификатор сервиса для которого записывается информация
     private String uri; // URI для которого был осуществлен запрос
     private String ip; // IP-адрес пользователя, осуществившего запрос
+    @CreationTimestamp
     private LocalDateTime timestamp; // Дата и время, когда был совершен запрос к эндпоинту
 }

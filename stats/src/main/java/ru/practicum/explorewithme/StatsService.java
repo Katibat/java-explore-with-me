@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -15,39 +14,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StatsService {
     private final StatsRepository repository;
+//    private final StatsRepositoryJpa repositoryJpa;
 
     @Transactional
-    public void save(EndpointHit endpointHit) {
+    public EndpointHit save(EndpointHit endpointHit) {
         log.info("StatsService: сохранение нового просмотра {}", endpointHit);
-        repository.save(endpointHit);
+        return repository.save(endpointHit);
     }
 
-    public List<ViewStats> getStats(LocalDateTime start, LocalDateTime end, String[] uris, boolean unique) {
+    public List<ViewStatsDto> getStats(List<String> uris,
+                                  Boolean unique,
+                                  LocalDateTime start,
+                                  LocalDateTime end,
+                                  String appName) {
         log.info("StatsService: получение статистики просмотров в период с {} по {} для uri={}, где unique={},"
                 , start, end, uris, unique);
-        List<ViewStats> viewStatsList;
-        if (!unique) {
-            viewStatsList = repository.findAllNotUnique(start, end);
-        } else {
-            viewStatsList = repository.findAllUnique(start, end);
-        }
-        if (uris != null) {
-            return viewStatsList.stream()
-                    .map(view -> filterByUri(view, uris))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-        } else {
-            return viewStatsList;
-        }
-    }
-
-    private ViewStats filterByUri(ViewStats viewStats, String[] uris) {
-        for (String uri : uris) {
-            if (viewStats.getUri().equals(uri)) {
-                return viewStats;
-            }
-        }
-        return null;
+        List<ViewStatsDto> hits = repository.getStats(uris, unique, start, end, appName);
+        hits.forEach(h -> h.setApp(appName));
+        return hits;
     }
 
     public int getViews(String uri) {

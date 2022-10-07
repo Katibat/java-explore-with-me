@@ -5,7 +5,7 @@ import ru.practicum.explorewithme.category.model.*;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CategoryMapper {
-    public static Category toNewModel(CategoryCreateDto categoryCreateDto) {
+    public static Category toModel(CategoryCreateDto categoryCreateDto) {
         return Category.builder()
                 .name(categoryCreateDto.getName())
                 .build();

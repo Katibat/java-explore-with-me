@@ -6,6 +6,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithme.category.CategoryRepository;
+import ru.practicum.explorewithme.category.model.Category;
 import ru.practicum.explorewithme.client.StatsClient;
 import ru.practicum.explorewithme.event.model.*;
 import ru.practicum.explorewithme.event.repository.EventRepository;
@@ -13,6 +14,7 @@ import ru.practicum.explorewithme.exception.*;
 import ru.practicum.explorewithme.request.*;
 import ru.practicum.explorewithme.request.model.*;
 import ru.practicum.explorewithme.user.UserRepository;
+import ru.practicum.explorewithme.user.model.User;
 
 import javax.persistence.EntityManager;
 import javax.validation.ValidationException;
@@ -50,12 +52,12 @@ public class EventPrivateService {
     public EventFullDto update(EventUpdateDto eventUpdateDto, Long userId) {
         Event event = findEventById(eventUpdateDto.getEventId());
         isInitiator(event, userId);
-        EventMapper.toEventUpdateDto(eventUpdateDto, event);
+        EventMapper.toUpdateDto(eventUpdateDto, event);
         if (event.getState().equals(EventState.PENDING) || event.getState().equals(CANCELED)) {
             throw new ForbiddenException("EventPrivateService: Для обновлении передан неверный статус события state=" +
                     event.getState());
         }
-        findCategoryById(event.getCategoryId());
+        findCategoryById(event.getCategory().getId());
         repository.save(event);
         entityManager.refresh(event);
         return EventMapper.toFullDto(event, getViews(eventUpdateDto.getEventId()));
@@ -95,7 +97,7 @@ public class EventPrivateService {
     public List<RequestFullDto> getAllRequestsByEventId(Long userId, Long eventId) {
         Event event = findEventById(eventId);
         isInitiator(event, userId);
-        return requestRepository.findAllByEvent(event)
+        return requestRepository.findAllByEventId(event.getId())
                 .stream()
                 .map(RequestMapper::toFullDto)
                 .collect(Collectors.toList());
@@ -106,7 +108,7 @@ public class EventPrivateService {
         Event event = findEventById(eventId);
         isInitiator(event, userId);
         findEventInfoByInitiator(userId, eventId);
-        List<Request> requests = event.getRequests();
+        List<Request> requests = findRequestsByEvent(event);
         Request request = findRequestById(requestId);
         if (!requests.contains(request)) {
             throw new ForbiddenException("EventPrivateService:  Не найден запрос с id=" + requestId);
@@ -120,6 +122,8 @@ public class EventPrivateService {
             request.setStatus(RequestStatus.REJECTED);
         }
         requestRepository.save(request);
+        RequestFullDto requestFullDto = RequestMapper.toFullDto(request);
+
         return RequestMapper.toFullDto(request);
     }
 
@@ -129,21 +133,21 @@ public class EventPrivateService {
                         new NotFoundException("EventPrivateService: Не найдено событие с id=" + eventId));
     }
 
-    private Request findRequestById(Long requestId) {
+    public Request findRequestById(Long requestId) {
         return requestRepository.findById(requestId)
                 .orElseThrow(() ->
                         new NotFoundException("EventPrivateService: Не найден запрос на участие в событии с id=" +
                                 requestId));
     }
 
-    private void findUserById(Long userId) {
-        userRepository.findById(userId)
+    public User findUserById(Long userId) {
+        return userRepository.findById(userId)
                 .orElseThrow(() ->
                         new NotFoundException("EventPrivateService: Не найден пользователь с id=" + userId));
     }
 
-    private void findCategoryById(Long categoryId) {
-        categoryRepository.findById(categoryId)
+    public Category findCategoryById(Long categoryId) {
+        return categoryRepository.findById(categoryId)
                 .orElseThrow(() ->
                         new NotFoundException("EventPrivateService: Не найдена категория с id=" + categoryId));
     }
@@ -153,6 +157,14 @@ public class EventPrivateService {
             throw new ConflictException("EventPrivateService: Попытка не инициатором получить информацию " +
                     "о событии с id=" + event.getId());
         }
+    }
+
+    private List<Request> findRequestsByEvent(Event event) {
+        return requestRepository.findAllByEventId(event.getId());
+    }
+
+    public Long getConfirmedRequestsCount(Event event) {
+        return findRequestsByEvent(event).stream().filter(r -> r.getStatus().equals(RequestStatus.CONFIRMED)).count();
     }
 
     private int getViews(Long eventsId) {

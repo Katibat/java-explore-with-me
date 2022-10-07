@@ -1,7 +1,5 @@
 package ru.practicum.explorewithme.event.repository;
 
-import ru.practicum.event.model.Event;
-import ru.practicum.event.EventState;
 import ru.practicum.explorewithme.event.EventState;
 import ru.practicum.explorewithme.event.model.Event;
 
@@ -91,15 +89,11 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
 
     private boolean filterByAvailable(Event event, boolean isAvailable) {
         if (isAvailable) {
-            int participantLimit = event.getParticipantLimit();
-            if (participantLimit == 0) {
+            if (event.getParticipantLimit() == 0) {
                 return true;
             }
-            long confirmedRequests = event.getConfirmedRequests();
-            return participantLimit > confirmedRequests;
-        } else {
-            return true;
         }
+        return true;
     }
 
     private boolean filterByText(Event event, String text) {

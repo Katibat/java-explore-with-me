@@ -1,7 +1,5 @@
 package ru.practicum.explorewithme.event.repository;
 
-import ru.practicum.event.model.Event;
-import ru.practicum.event.EventState;
 import ru.practicum.explorewithme.event.EventState;
 import ru.practicum.explorewithme.event.model.Event;
 

@@ -29,7 +29,7 @@ public class CategoryAdminService {
     @Transactional
     public CategoryDto save(CategoryCreateDto categoryCreateDto) {
         log.info("CategoryAdminService: Сохранение категории с названием={}.", categoryCreateDto.getName());
-        Category category = CategoryMapper.toNewModel(categoryCreateDto);
+        Category category = CategoryMapper.toModel(categoryCreateDto);
         return CategoryMapper.toDto(repository.save(category));
     }
 

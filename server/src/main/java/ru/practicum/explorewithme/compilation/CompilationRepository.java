@@ -3,10 +3,12 @@ package ru.practicum.explorewithme.compilation;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.stereotype.Repository;
 import ru.practicum.explorewithme.compilation.model.Compilation;
 
 import java.util.Collection;
 
+@Repository
 public interface CompilationRepository extends JpaRepository<Compilation, Long> {
     Collection<Compilation> findByPinned(Boolean pinned, PageRequest of);
 

@@ -28,7 +28,7 @@ public class RequestPrivateService {
         log.info("RequestPrivateService: Получение информации о заявках текущего пользователя id={} " +
                 "на участие в чужих событиях.", userId);
         User user = findUserById(userId);
-        return repository.findAllByRequester(user).stream()
+        return repository.findAllByRequesterId(user).stream()
                 .map(RequestMapper::toFullDto)
                 .collect(Collectors.toList());
     }
