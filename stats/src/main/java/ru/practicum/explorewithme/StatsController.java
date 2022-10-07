@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.explorewithme.model.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -18,21 +19,20 @@ public class StatsController {
     private final StatsService service;
 
     @PostMapping("/hit") // Сохранение информации о том, что к эндпоинту был запрос
-    public EndpointHitDto saveHit(@Valid @RequestBody EndpointHitDto endpointHitDto) {
+    public void saveHit(@Valid @RequestBody EndpointHitDto endpointHitDto) {
         log.info("StatsController: сохранение просмотра hit={}", endpointHitDto.getUri());
         EndpointHit endpointHit = StatsMapper.toModel(endpointHitDto);
-        return StatsMapper.toHitDto(service.save(endpointHit));
+        service.save(endpointHit);
     }
 
     @GetMapping("/stats") // Получение статистики по посещениям
-    public List<ViewStatsDto> getStats(
-            @RequestParam(name = "uris", required = false) List<String> uris,
-            @RequestParam(name = "unique", defaultValue = "false") Boolean unique,
-            @RequestParam(name = "start") LocalDateTime start,
-            @RequestParam(name = "end") LocalDateTime end,
-            @RequestParam(name = "app", defaultValue = "ewm-main-service") String appName) {
+    public List<ViewStats> getStats(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
+            @RequestParam(required = false) String[] uris,
+            @RequestParam(defaultValue = "false") boolean unique) {
         log.info("StatsController: получение статистики по посещениям за период с {} по {}.", start, end);
-        return service.getStats(uris, unique, start, end, appName);
+        return service.getStats(start, end, uris, unique);
     }
 
     @GetMapping("/hit") // Получение статистики по просмотрам

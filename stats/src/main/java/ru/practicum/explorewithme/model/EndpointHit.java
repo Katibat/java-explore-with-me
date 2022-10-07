@@ -1,7 +1,6 @@
-package ru.practicum.explorewithme;
+package ru.practicum.explorewithme.model;
 
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -20,6 +19,5 @@ public class EndpointHit {
     private String app; // Идентификатор сервиса для которого записывается информация
     private String uri; // URI для которого был осуществлен запрос
     private String ip; // IP-адрес пользователя, осуществившего запрос
-    @CreationTimestamp
     private LocalDateTime timestamp; // Дата и время, когда был совершен запрос к эндпоинту
 }

@@ -4,38 +4,54 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.explorewithme.model.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class StatsService {
     private final StatsRepository repository;
-//    private final StatsRepositoryJpa repositoryJpa;
 
-    @Transactional
-    public EndpointHit save(EndpointHit endpointHit) {
+    public void save(EndpointHit endpointHit) {
         log.info("StatsService: сохранение нового просмотра {}", endpointHit);
-        return repository.save(endpointHit);
+        repository.save(endpointHit);
     }
 
-    public List<ViewStatsDto> getStats(List<String> uris,
-                                  Boolean unique,
-                                  LocalDateTime start,
-                                  LocalDateTime end,
-                                  String appName) {
-        log.info("StatsService: получение статистики просмотров в период с {} по {} для uri={}, где unique={},"
-                , start, end, uris, unique);
-        List<ViewStatsDto> hits = repository.getStats(uris, unique, start, end, appName);
-        hits.forEach(h -> h.setApp(appName));
-        return hits;
-    }
-
-    public int getViews(String uri) {
+    public Integer getViews(String uri) {
         log.info("StatsService: получение статистики просмотров по uri={}.", uri);
         return repository.getViews(uri);
+    }
+
+    public List<ViewStats> getStats(LocalDateTime start, LocalDateTime end, String[] uris, boolean unique) {
+        log.info("StatsService: получение статистики просмотров в период с {} по {} для uri={}, где unique={},"
+                , start, end, uris, unique);
+        List<ViewStats> viewStats;
+        if (!unique) {
+            viewStats = repository.findAllNotUnique(start, end);
+        } else {
+            viewStats = repository.findAllUnique(start, end);
+        }
+        if (uris != null) {
+            return viewStats.stream()
+                    .map(view -> filterByUri(view, uris))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        } else {
+            return viewStats;
+        }
+    }
+
+    public ViewStats filterByUri(ViewStats viewStats, String[] uris) {
+        for (String uri : uris) {
+            if (viewStats.getUri().equals(uri)) {
+                return viewStats;
+            }
+        }
+        return null;
     }
 }
