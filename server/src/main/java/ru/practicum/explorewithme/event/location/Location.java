@@ -9,10 +9,7 @@ import javax.persistence.*;
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "event_locations")
 public class Location {
-    @Column(name = "lat")
-    private Double lat;
-    @Column(name = "lon")
-    private Double lon;
+    private Float lat;
+    private Float lon;
 }

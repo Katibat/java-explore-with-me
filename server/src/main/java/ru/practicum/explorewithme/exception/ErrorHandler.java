@@ -8,34 +8,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
-import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class ErrorHandler {
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiError handleConflictException(final ConflictException e) {
-        return ApiError.builder()
-                .status(HttpStatus.CONFLICT)
-                .reason(HttpStatus.CONFLICT.getReasonPhrase())
-                .message(e.getMessage())
-                .timestamp(LocalDateTime.now())
-                .build();
-    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ApiError handleForbiddenException(final ForbiddenException e) {
         return ApiError.builder()
                 .status(HttpStatus.FORBIDDEN)
-                .reason(HttpStatus.FORBIDDEN.getReasonPhrase())
+                .reason("For the requested operation the conditions are not met.")
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now())
                 .build();
@@ -46,18 +31,7 @@ public class ErrorHandler {
     public ApiError handleNotFoundException(final NotFoundException e) {
         return ApiError.builder()
                 .status(HttpStatus.NOT_FOUND)
-                .reason(HttpStatus.NOT_FOUND.getReasonPhrase())
-                .message(e.getMessage())
-                .timestamp(LocalDateTime.now())
-                .build();
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleValidationException(final ValidationException e) {
-        return ApiError.builder()
-                .status(HttpStatus.BAD_REQUEST)
-                .reason(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .reason("The required object was not found.")
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now())
                 .build();
@@ -68,7 +42,7 @@ public class ErrorHandler {
     public ApiError handleInternalServerError(final Throwable e) {
         return ApiError.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .reason(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                .reason("Error occurred")
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now())
                 .build();
@@ -88,28 +62,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError constraintViolation(final ConstraintViolationException e) {
-        return ApiError.builder()
-                .status(HttpStatus.BAD_REQUEST)
-                .reason(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .message(e.getMessage())
-                .timestamp(LocalDateTime.now())
-                .build();
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ApiError entityNotFound(final EntityNotFoundException e) {
-        return ApiError.builder()
-                .status(HttpStatus.NOT_FOUND)
-                .reason(HttpStatus.NOT_FOUND.getReasonPhrase())
-                .message(e.getMessage())
-                .timestamp(LocalDateTime.now())
-                .build();
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError conflict(final DataIntegrityViolationException e) {
         String message = NestedExceptionUtils.getMostSpecificCause(e).getMessage();
@@ -119,12 +71,6 @@ public class ErrorHandler {
                 .message(message)
                 .timestamp(LocalDateTime.now())
                 .build();
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, Object> handleNotSuchElement(final NoSuchElementException e) {
-        return Map.of("error", e.getMessage());
     }
 
     private List<String> getErrors(List<FieldError> fieldErrors) {

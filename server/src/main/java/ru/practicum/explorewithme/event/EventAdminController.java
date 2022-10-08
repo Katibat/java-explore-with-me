@@ -6,7 +6,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.event.model.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,16 +18,15 @@ public class EventAdminController {
     private final EventAdminService service;
 
     @GetMapping // Поиск событий
-    private List<EventFullDto> findEvents(
-            @RequestParam(required = false) Long[] users,
-            @RequestParam(required = false) EventState[] states,
-            @RequestParam(required = false) Long[] categories,
+    private List<EventFullDto> searchEvents(
+            @RequestParam(required = false) List<Long> users,
+            @RequestParam(required = false) List<String> states,
+            @RequestParam(required = false) List<Long> categories,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
             @PositiveOrZero @RequestParam(defaultValue = "0") int from,
-            @Positive @RequestParam(defaultValue = "10") int size,
-            HttpServletRequest request) {
-        return service.findEvents(users, states, categories, rangeStart, rangeEnd, from, size);
+            @Positive @RequestParam(defaultValue = "10") int size) {
+        return service.searchEvents(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PutMapping("/{eventId}") // Редактирование события

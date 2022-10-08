@@ -1,15 +1,13 @@
 package ru.practicum.explorewithme.client;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.web.client.*;
 
+@RequiredArgsConstructor
 public class BaseClient {
     protected final RestTemplate rest;
-
-    public BaseClient(RestTemplate rest) {
-        this.rest = rest;
-    }
 
     protected ResponseEntity<Object> get(String path) {
         return makeAndSendRequest(HttpMethod.GET, path, null);

@@ -12,5 +12,6 @@ public class CategoryDto {
     private Long id;
     @NotNull
     @NotBlank
+    @Size(min = 3, max = 120)
     private String name;
 }

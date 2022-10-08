@@ -11,11 +11,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventUpdateDto {
-    @NotNull
-    @Size(min = 5, max = 512)
+    @NotBlank
+    @Size(min = 20, max = 2000)
     private String annotation;
     private Long category;
-    @Size(min = 5, max = 1024)
+    @NotBlank
+    @Size(min = 20, max = 7000)
     private String description;
     @Future
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -24,6 +25,7 @@ public class EventUpdateDto {
     private Long eventId;
     private Boolean paid;
     private Integer participantLimit;
-    @Size(min = 5, max = 128)
+    @NotBlank
+    @Size(min = 3, max = 120)
     private String title;
 }

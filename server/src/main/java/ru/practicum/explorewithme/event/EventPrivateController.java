@@ -3,7 +3,7 @@ package ru.practicum.explorewithme.event;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.event.model.*;
-import ru.practicum.explorewithme.request.model.RequestFullDto;
+import ru.practicum.explorewithme.request.model.RequestDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -16,7 +16,7 @@ public class EventPrivateController {
     private final EventPrivateService service;
 
     @GetMapping("/{userId}/events") // Получение событий добавленных текущим пользователем
-    public List<EventShortDto> findEventsForInitiator(@PathVariable Long userId,
+    public List<EventFullDto> findEventsForInitiator(@PathVariable Long userId,
                                                       @PositiveOrZero @RequestParam(defaultValue = "0") int from,
                                                       @Positive @RequestParam(defaultValue = "10") int size) {
         return service.findEventByInitiatorId(userId, from, size);
@@ -44,21 +44,21 @@ public class EventPrivateController {
 
     @GetMapping("/{userId}/events/{eventId}/requests") // Получение информации о запросах на участие
     // в событии текущего пользователя
-    public List<RequestFullDto> getAllRequests(@PathVariable Long userId, @PathVariable Long eventId) {
+    public List<RequestDto> getAllRequests(@PathVariable Long userId, @PathVariable Long eventId) {
         return service.getAllRequestsByEventId(userId, eventId);
     }
 
     @PatchMapping("/{userId}/events/{eventId}/requests/{requestId}/confirm") // Подтверждение чужой заявки на участие
-    public RequestFullDto confirmRequest(@PathVariable Long userId,
-                                         @PathVariable Long eventId,
-                                         @PathVariable Long requestId) {
+    public RequestDto confirmRequest(@PathVariable Long userId,
+                                     @PathVariable Long eventId,
+                                     @PathVariable Long requestId) {
         return service.changeRequestStatus(userId, eventId, requestId, true);
     }
 
     @PatchMapping("/{userId}/events/{eventId}/requests/{requestId}/reject") // Отклонение чужой заявки на участие
-    public RequestFullDto rejectRequest(@PathVariable Long userId,
-                                        @PathVariable Long eventId,
-                                        @PathVariable Long requestId) {
+    public RequestDto rejectRequest(@PathVariable Long userId,
+                                    @PathVariable Long eventId,
+                                    @PathVariable Long requestId) {
         return service.changeRequestStatus(userId, eventId, requestId, false);
     }
 }

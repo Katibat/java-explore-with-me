@@ -9,9 +9,12 @@ import javax.validation.constraints.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserCreateDto {
-    @NotNull
     @Email
-    private String email;
+    @NotNull
     @NotBlank
+    private String email;
+    @NotNull
+    @NotBlank
+    @Size(min = 3, max = 120)
     private String name;
 }

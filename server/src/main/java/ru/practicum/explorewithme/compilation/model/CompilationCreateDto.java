@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CompilationCreateDto {
     @NotBlank
-    @Length(min = 5, max = 256)
+    @Length(min = 3, max = 120)
     private String title;
     private Boolean pinned;
     private List<Long> events;

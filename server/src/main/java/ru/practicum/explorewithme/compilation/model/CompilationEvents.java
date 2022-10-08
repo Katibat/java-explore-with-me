@@ -9,11 +9,13 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "compilations")
-public class Compilation {
+@Table(name = "events_compilation")
+public class CompilationEvents {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title;
-    private boolean pinned;
+    @Column(name = "compilation_id")
+    private Long compilation;
+    @Column(name = "event_id")
+    private Long event;
 }

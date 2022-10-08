@@ -9,6 +9,8 @@ import ru.practicum.explorewithme.exception.NotFoundException;
 import ru.practicum.explorewithme.user.model.*;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -17,9 +19,12 @@ import java.util.List;
 public class UserAdminService {
     private final UserRepository repository;
 
-    public List<UserDto> findAll(Long[] ids, int from, int size) {
-        Page<User> users = repository.findAllByIdIn(ids, PageRequest.of(from, size));
-        return users.map(UserMapper::toDto).toList();
+    public List<UserDto> findAll(Set<Long> ids, int from, int size) {
+        log.info("UserAdminService: Получение информации о пользователях с параметрами from={}, size={}", from, size);
+        return repository.findAll(PageRequest.of(from / size, size))
+                .stream()
+                .map(UserMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -30,11 +35,19 @@ public class UserAdminService {
     }
 
     @Transactional
-    public void delete(Long userId) {
-        User user = repository.findById(userId)
-                .orElseThrow(() ->
-                        new NotFoundException("UserAdminService: Не найден пользователь для удаления с id=" + userId));
-        repository.delete(user);
+    public void deleteById(Long userId) {
+        boolean isExists = repository.existsById(userId);
+        if (!isExists) {
+            throw new NotFoundException("UserAdminService: Не найден пользователь для удаления с id=" + userId);
+        }
+        repository.deleteById(userId);
         log.info("UserAdminService: Удален пользователь с id=" + userId);
+    }
+
+    public List<UserDto> getUsersByIds(Set<Long> ids) {
+        return repository.findUsersByIdIn(ids)
+                .stream()
+                .map(UserMapper::toDto)
+                .collect(Collectors.toList());
     }
 }

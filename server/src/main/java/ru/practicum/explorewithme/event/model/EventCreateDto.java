@@ -12,11 +12,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventCreateDto {
+    @NotNull
     @NotBlank
+    @Size(min = 20, max = 2000)
     private String annotation;
     @NotNull
     private Long category;
+    @NotNull
     @NotBlank
+    @Size(min = 20, max = 254)
     private String description;
     @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -24,11 +28,13 @@ public class EventCreateDto {
     @NotNull
     private LocationDto location;
     @NotNull
-    private Boolean paid;
+    private Boolean paid = false;
     @PositiveOrZero
     private Integer participantLimit = 0;
     @NotNull
     private Boolean requestModeration = true;
+    @NotNull
     @NotBlank
+    @Size(min = 3, max = 120)
     private String title;
 }

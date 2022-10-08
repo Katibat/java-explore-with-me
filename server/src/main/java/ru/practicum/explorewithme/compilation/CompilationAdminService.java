@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithme.compilation.model.*;
+import ru.practicum.explorewithme.event.EventMapper;
 import ru.practicum.explorewithme.event.EventPrivateService;
 import ru.practicum.explorewithme.event.model.Event;
-import ru.practicum.explorewithme.event.repository.EventRepository;
+import ru.practicum.explorewithme.event.model.EventShortDto;
+import ru.practicum.explorewithme.event.EventRepository;
 import ru.practicum.explorewithme.exception.*;
 
 import java.util.*;
@@ -19,47 +21,61 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class CompilationAdminService {
     private final CompilationRepository repository;
+    private final CompilationEventsRepository compilationEventsRepository;
     private final EventRepository eventRepository;
     private final EventPrivateService eventPrivateService;
 
     @Transactional
     public CompilationDto save(CompilationCreateDto compilationCreateDto) {
-        List<Long> eventsId = compilationCreateDto.getEvents();
         Compilation compilation = CompilationMapper.toModel(compilationCreateDto);
-        Set<Event> events = eventsId.stream()
-                .map(eventPrivateService::findEventById)
-                .collect(Collectors.toSet());
-        compilation.setEvents(events);
-        repository.save(compilation);
-        return CompilationMapper.toDto(compilation);
+        Compilation savedComp = repository.save(compilation);
+        for (Long eventId : compilationCreateDto.getEvents()) {
+            CompilationEvents compilationEvents = CompilationEvents.builder()
+                    .compilation(savedComp.getId())
+                    .event(eventId)
+                    .build();
+            compilationEventsRepository.save(compilationEvents);
+        }
+        log.info("CompilationAdminService: Сохранена подборка событий с id={}.", savedComp.getId());
+        return CompilationMapper.toDto(savedComp, findCompilationEvents(savedComp.getId()));
     }
 
     @Transactional
-    public void delete(Long compilationId) {
-        Compilation compilation = repository.findById(compilationId)
+    public void delete(Long compId) {
+        Compilation compilation = repository.findById(compId)
                 .orElseThrow(() ->
                         new NotFoundException("CompilationAdminService: Не найдена подборка событий с id=" +
-                                compilationId));
+                                compId));
         repository.delete(compilation);
-        log.info("CompilationAdminService: Удалена информация о подборке событий №={}.", compilationId);
+        log.info("CompilationAdminService: Удалена информация о подборке событий №={}.", compId);
     }
 
     @Transactional
-    public void saveOrDeleteEventInCompilation(Long compilationId, Long eventId, boolean isDeleting) {
-        Compilation compilation = findCompilationById(compilationId);
+    public void saveOrDeleteEventInCompilation(Long compId, Long eventId, boolean isDeleting) {
+        Compilation compilation = findCompilationById(compId);
         Event event = findEventById(eventId);
+        List<Event> events = findCompilationEvents(compilation.getId())
+                .stream().map(EventMapper::toModelFromShortDto).collect(Collectors.toList());
         if (isDeleting) {
-            if (compilation.getEvents().contains(event)) {
-                repository.deleteEventFromCompilation(compilationId, eventId);
+            if (events.contains(event)) {
+                compilationEventsRepository.deleteByCompilationAndEvent(compId, eventId);
+                log.info("CompilationAdminService: Удалено событие с id={} из подборки событий с id={}.",
+                        eventId, compId);
             }
         } else {
-            if (!compilation.getEvents().contains(event)) {
-                repository.addEventToCompilation(compilationId, eventId);
+            if (!events.contains(event)) {
+                CompilationEvents compilationEvents = CompilationEvents.builder()
+                        .compilation(compId)
+                        .event(eventId)
+                        .build();
+                compilationEventsRepository.save(compilationEvents);
+                log.info("CompilationAdminService: Добавлено событие с id={} в подборку событий с id={}.",
+                        eventId, compId);
             }
         }
     }
 
-        @Transactional
+    @Transactional
     public void changeCompilationPin(Long compilationId, boolean isDeleting) {
         Compilation compilation = findCompilationById(compilationId);
         boolean pinned = compilation.isPinned();
@@ -84,6 +100,11 @@ public class CompilationAdminService {
         return eventRepository.findById(eventId)
                 .orElseThrow(() ->
                         new NotFoundException("CompilationService: Не найдено событие с id=" + eventId));
+    }
+
+    private List<EventShortDto> findCompilationEvents(Long compId) {
+        List<Long> ids = compilationEventsRepository.findCompilationEventIds(compId);
+        return eventPrivateService.findEventsByIds(ids);
     }
 
     private Compilation findCompilationById(Long compilationId) {
