@@ -28,8 +28,8 @@ public class StatsService {
     }
 
     public List<ViewStats> getStats(LocalDateTime start, LocalDateTime end, String[] uris, boolean unique) {
-        log.info("StatsService: получение статистики просмотров в период с {} по {} для uri={}, где unique={},"
-                , start, end, uris, unique);
+        log.info("StatsService: получение статистики просмотров в период с {} по {} для uri={}, где unique={},",
+                start, end, uris, unique);
         List<ViewStats> viewStats;
         if (!unique) {
             viewStats = repository.findAllNotUnique(start, end);
