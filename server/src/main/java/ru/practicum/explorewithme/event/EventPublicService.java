@@ -45,8 +45,8 @@ public class EventPublicService {
             try {
                 extractedSort = EventSort.valueOf(sort);
             } catch (IllegalArgumentException e) {
-                throw new IncorrectSortCriteriaException("EventPublicService: При получени списка событий передан " +
-                        "некорректный вид сортировки.");
+                throw new IncorrectSortCriteriaException("EventPublicService: " +
+                        "При получени списка событий передан некорректный вид сортировки sort=" + sort);
             }
             switch (extractedSort) {
                 case EVENT_DATE:
@@ -74,8 +74,8 @@ public class EventPublicService {
                 .orElseThrow(() ->
                         new NotFoundException("EventPublicService: Не найдено событие с id=" + eventId));
         if (!EventState.PUBLISHED.equals(event.getState())) {
-            throw new ForbiddenException("EventPublicService: Запрошена информация о " +
-                    "неопубликованом событиеи с id="+ eventId);
+            throw new ForbiddenException("EventPublicService: " +
+                    "Запрошена информация о неопубликованом событии с id=" + eventId);
         }
         return EventMapper.toFullDto(event);
     }

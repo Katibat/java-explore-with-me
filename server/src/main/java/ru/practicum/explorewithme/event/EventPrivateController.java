@@ -23,7 +23,7 @@ public class EventPrivateController {
     }
 
     @PatchMapping("/{userId}/events") // Изменение события добавленного текущим пользователем
-    public EventFullDto update(@RequestBody EventUpdateDto eventUpdateDto, @PathVariable Long userId) {
+    public EventFullDto update(@Valid @RequestBody EventUpdateDto eventUpdateDto, @PathVariable Long userId) {
         return service.update(eventUpdateDto, userId);
     }
 

@@ -1,7 +1,6 @@
 package ru.practicum.explorewithme.event.model;
 
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.explorewithme.category.model.Category;
 import ru.practicum.explorewithme.event.EventState;
 import ru.practicum.explorewithme.event.location.Location;
@@ -25,10 +24,8 @@ public class Event {
     private String description;
     @ManyToOne
     @JoinColumn(name = "category_id")
-    @ToString.Exclude
     private Category category;
-    @Column(name = "created_on", insertable = false, updatable = false)
-    @CreationTimestamp
+    @Column(name = "created_on")
     private LocalDateTime createdOn;
     @Column(name = "event_date")
     private LocalDateTime eventDate;
@@ -44,7 +41,6 @@ public class Event {
     @Column(name = "request_moderation")
     private boolean requestModeration;
     @Enumerated(EnumType.STRING)
-    @Column(name = "state")
     private EventState state;
     @AttributeOverrides({
             @AttributeOverride(name = "lat", column = @Column(name = "location_lat")),

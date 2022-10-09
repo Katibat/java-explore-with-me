@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class StatsClient extends BaseClient {
-    @Value("explore-with-me")
+    @Value("${app-name}")
     private String appName;
 
     @Autowired

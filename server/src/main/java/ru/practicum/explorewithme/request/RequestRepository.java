@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithme.request.model.Request;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {

@@ -20,18 +20,15 @@ public class EventCreateDto {
     private Long category;
     @NotNull
     @NotBlank
-    @Size(min = 20, max = 254)
+    @Size(min = 20, max = 7000)
     private String description;
     @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     @NotNull
     private LocationDto location;
-    @NotNull
     private Boolean paid = false;
-    @PositiveOrZero
     private Integer participantLimit = 0;
-    @NotNull
     private Boolean requestModeration = true;
     @NotNull
     @NotBlank
