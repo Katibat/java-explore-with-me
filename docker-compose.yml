@@ -2,7 +2,7 @@ version: '3.8'
 services:
 
   ewm-stats:
-    build: stats/
+    build: stats-server/
     image: ewm-stats
     ports:
       - "9090:9090"
@@ -11,11 +11,11 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
       - DB_NAME=stats
-      - POSTGRES_USER=jokindy
-      - POSTGRES_PASSWORD=iamroot
+      - POSTGRES_USER=Kate
+      - POSTGRES_PASSWORD=purrrrrr
 
   stats-db:
-    image: postgres:13.7-alpine
+    image: postgres:14
     ports:
       - "6542:5432"
     environment:
@@ -39,7 +39,7 @@ services:
       - POSTGRES_PASSWORD=purrrrrr
 
   ewm-db:
-    image: postgres:13.7-alpine
+    image: postgres:14
     ports:
       - "6541:5432"
     environment:
