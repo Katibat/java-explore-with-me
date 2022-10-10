@@ -3,6 +3,7 @@ package ru.practicum.explorewithme.event;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.explorewithme.client.EndpointHit;
 import ru.practicum.explorewithme.client.StatsClient;
 import ru.practicum.explorewithme.event.model.*;
 

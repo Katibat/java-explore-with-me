@@ -18,20 +18,22 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class UserAdminService {
     private final UserRepository repository;
+    private final UserMapper mapper;
 
     public List<UserDto> findAll(Set<Long> ids, int from, int size) {
         log.info("UserAdminService: Получение информации о пользователях с параметрами from={}, size={}", from, size);
         return repository.findAll(PageRequest.of(from / size, size))
                 .stream()
-                .map(UserMapper::toDto)
+                .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public UserDto save(UserCreateDto userCreateDto) {
-        log.info("UserAdminService: Для сохранения передан пользователь с name=" + userCreateDto.getName());
-        User user = repository.save(UserMapper.toModel(userCreateDto));
-        return UserMapper.toDto(user);
+        User user = mapper.toModel(userCreateDto);
+        User saved = repository.save(user);
+        log.info("UserAdminService: Cохранен пользователь=" + saved);
+        return mapper.toDto(saved);
     }
 
     @Transactional
@@ -47,7 +49,7 @@ public class UserAdminService {
     public List<UserDto> getUsersByIds(Set<Long> ids) {
         return repository.findUsersByIdIn(ids)
                 .stream()
-                .map(UserMapper::toDto)
+                .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
 }

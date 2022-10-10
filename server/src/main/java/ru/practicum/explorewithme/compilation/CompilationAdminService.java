@@ -24,10 +24,12 @@ public class CompilationAdminService {
     private final CompilationEventsRepository compilationEventsRepository;
     private final EventRepository eventRepository;
     private final EventPrivateService eventPrivateService;
+    private final CompilationMapper mapper;
+    private final EventMapper eventMapper;
 
     @Transactional
     public CompilationDto save(CompilationCreateDto compilationCreateDto) {
-        Compilation compilation = CompilationMapper.toModel(compilationCreateDto);
+        Compilation compilation = mapper.toModel(compilationCreateDto);
         Compilation savedComp = repository.save(compilation);
         for (Long eventId : compilationCreateDto.getEvents()) {
             CompilationEvents compilationEvents = CompilationEvents.builder()
@@ -37,7 +39,7 @@ public class CompilationAdminService {
             compilationEventsRepository.save(compilationEvents);
         }
         log.info("CompilationAdminService: Сохранена подборка событий с id={}.", savedComp.getId());
-        return CompilationMapper.toDto(savedComp, findCompilationEvents(savedComp.getId()));
+        return mapper.toDto(savedComp, findCompilationEvents(savedComp.getId()));
     }
 
     @Transactional
@@ -55,7 +57,7 @@ public class CompilationAdminService {
         Compilation compilation = findCompilationById(compId);
         Event event = findEventById(eventId);
         List<Event> events = findCompilationEvents(compilation.getId())
-                .stream().map(EventMapper::toModelFromShortDto).collect(Collectors.toList());
+                .stream().map(eventMapper::toModelFromShortDto).collect(Collectors.toList());
         if (isDeleting) {
             if (events.contains(event)) {
                 compilationEventsRepository.deleteByCompilationAndEvent(compId, eventId);

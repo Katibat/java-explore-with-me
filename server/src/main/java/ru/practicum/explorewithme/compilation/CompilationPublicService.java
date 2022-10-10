@@ -19,11 +19,12 @@ public class CompilationPublicService {
     private final CompilationRepository repository;
     private final CompilationEventsRepository compilationEventsRepository;
     private final EventPrivateService eventPrivateService;
+    private final CompilationMapper mapper;
 
     public List<CompilationDto> findAll(Boolean pinned, int from, int size) {
         return repository.findAllByPinned(pinned, PageRequest.of(from / size, size))
                 .stream()
-                .map(c -> CompilationMapper.toDto(c, findCompilationEvents(c.getId())))
+                .map(c -> mapper.toDto(c, findCompilationEvents(c.getId())))
                 .collect(Collectors.toList());
     }
 
@@ -31,7 +32,7 @@ public class CompilationPublicService {
         Compilation compilation = repository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("CompilationPublicService: Не найдена подборка событий " +
                         "с id=" + compId));
-        return CompilationMapper.toDto(compilation, findCompilationEvents(compId));
+        return mapper.toDto(compilation, findCompilationEvents(compId));
     }
 
     private List<EventShortDto> findCompilationEvents(Long compId) {

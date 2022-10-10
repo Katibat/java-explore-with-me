@@ -1,22 +1,23 @@
 package ru.practicum.explorewithme.compilation;
 
 import lombok.*;
+import org.springframework.stereotype.Component;
 import ru.practicum.explorewithme.compilation.model.*;
 import ru.practicum.explorewithme.event.model.*;
 
 import java.util.List;
 
-@RequiredArgsConstructor
+@Component
 public class CompilationMapper {
 
-    public static Compilation toModel(CompilationCreateDto compilationCreateDto) {
+    public Compilation toModel(CompilationCreateDto compilationCreateDto) {
         return Compilation.builder()
                 .title(compilationCreateDto.getTitle())
                 .pinned(compilationCreateDto.getPinned())
                 .build();
     }
 
-    public static CompilationDto toDto(Compilation compilation, List<EventShortDto> events) {
+    public CompilationDto toDto(Compilation compilation, List<EventShortDto> events) {
         return CompilationDto.builder()
                 .id(compilation.getId())
                 .title(compilation.getTitle())

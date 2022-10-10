@@ -1,5 +1,7 @@
 package ru.practicum.explorewithme.event;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import ru.practicum.explorewithme.category.model.Category;
 import ru.practicum.explorewithme.category.model.CategoryDto;
 import ru.practicum.explorewithme.client.StatsClient;
@@ -7,18 +9,20 @@ import ru.practicum.explorewithme.event.location.Location;
 import ru.practicum.explorewithme.event.location.LocationMapper;
 import ru.practicum.explorewithme.event.model.*;
 import ru.practicum.explorewithme.request.RequestRepository;
-import ru.practicum.explorewithme.request.RequestStatus;
 import ru.practicum.explorewithme.user.model.User;
 import ru.practicum.explorewithme.user.model.UserShortDto;
 
 import java.time.LocalDateTime;
 
+@Component
+@RequiredArgsConstructor
 public class EventMapper {
-    private static RequestRepository requestRepository;
-    private static StatsClient client;
+    private final RequestRepository requestRepository;
+    private final StatsClient client;
 
-    public static Event toModel(EventCreateDto eventCreateDto, Long userId) {
+    public Event toModel(EventCreateDto eventCreateDto, Long userId) {
         return Event.builder()
+                .id(null)
                 .title(eventCreateDto.getTitle())
                 .annotation(eventCreateDto.getAnnotation())
                 .description(eventCreateDto.getDescription())
@@ -28,14 +32,14 @@ public class EventMapper {
                 .initiator(new User(userId, null, null))
                 .paid(eventCreateDto.getPaid())
                 .participantLimit(eventCreateDto.getParticipantLimit())
+                .publishedOn(null)
                 .requestModeration(eventCreateDto.getRequestModeration())
                 .state(EventState.PENDING)
                 .location(new Location(eventCreateDto.getLocation().getLat(), eventCreateDto.getLocation().getLon()))
                 .build();
     }
 
-    public static EventFullDto toFullDto(Event event) {
-        Integer confirmedRequests = requestRepository.countByEventAndStatus(event.getId(), RequestStatus.CONFIRMED);
+    public EventFullDto toFullDto(Event event) {
         return EventFullDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
@@ -43,7 +47,7 @@ public class EventMapper {
                 .createdOn(event.getCreatedOn())
                 .eventDate(event.getEventDate())
                 .location(LocationMapper.toDto(event.getLocation()))
-                .confirmedRequests(confirmedRequests)
+                .confirmedRequests(requestRepository.getConfirmedRequests(event.getId()))
                 .category(new CategoryDto(event.getCategory().getId(), event.getCategory().getName()))
                 .initiator(new UserShortDto(event.getInitiator().getId(), event.getInitiator().getName()))
                 .paid(event.getPaid())
@@ -56,13 +60,12 @@ public class EventMapper {
                 .build();
     }
 
-    public static EventShortDto toShortDto(Event event) {
-        Integer confirmedRequests = requestRepository.countByEventAndStatus(event.getId(), RequestStatus.CONFIRMED);
+    public EventShortDto toShortDto(Event event) {
         return EventShortDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
                 .category(new CategoryDto(event.getCategory().getId(), event.getCategory().getName()))
-                .confirmedRequests(confirmedRequests)
+                .confirmedRequests(requestRepository.getConfirmedRequests(event.getId()))
                 .eventDate(event.getEventDate())
                 .initiator(new UserShortDto(event.getInitiator().getId(), event.getInitiator().getName()))
                 .paid(event.getPaid())
@@ -71,7 +74,7 @@ public class EventMapper {
                 .build();
     }
 
-    public static Event toModelFromShortDto(EventShortDto eventShortDto) {
+    public Event toModelFromShortDto(EventShortDto eventShortDto) {
         return Event.builder()
                 .id(eventShortDto.getId())
                 .title(eventShortDto.getTitle())
@@ -81,7 +84,7 @@ public class EventMapper {
                 .build();
     }
 
-    public static EventShortDto toShortDtoFromFullDto(EventFullDto eventFullDto) {
+    public EventShortDto toShortDtoFromFullDto(EventFullDto eventFullDto) {
         return EventShortDto.builder()
                 .id(eventFullDto.getId())
                 .annotation(eventFullDto.getAnnotation())
@@ -95,7 +98,7 @@ public class EventMapper {
                 .build();
     }
 
-    private static Integer getViews(Long eventId) {
+    private Integer getViews(Long eventId) {
         String uri = "/events/" + eventId;
         return (Integer) client.getViews(uri);
     }

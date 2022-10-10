@@ -32,7 +32,7 @@ services:
       - ewm-stats
       - ewm-db
     environment:
-      - SHAREIT_SERVER_URL=http://ewm-stats:9090
+      - STATS_SERVER_URL=http://ewm-stats:9090
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/server
       - DB_NAME=server
       - POSTGRES_USER=Kate

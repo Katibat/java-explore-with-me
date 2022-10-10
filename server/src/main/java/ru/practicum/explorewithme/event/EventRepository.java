@@ -10,7 +10,7 @@ import java.util.*;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
-    Page<Event> findAllByInitiatorId(Long userId, Pageable pageable);
+    List<Event> findAllByInitiatorId(Long userId, Pageable pageable);
 
     @Modifying
     @Query("update Event e set e.state = ?1 where e.id = ?2")

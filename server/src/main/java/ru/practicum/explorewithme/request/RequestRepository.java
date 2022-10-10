@@ -19,9 +19,16 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE Request AS pr " +
-            "SET pr.status = 'REJECTED' " +
-            "WHERE pr.status = 'PENDING' " +
-            "AND pr.event = ?1 ")
+    @Query("UPDATE Request AS r " +
+            "SET r.status = 'REJECTED' " +
+            "WHERE r.status = 'PENDING' " +
+            "AND r.event = ?1 ")
     void rejectPendingRequests(Long eventId);
+
+    @Query(value = "select count(*) " +
+            "from requests " +
+            "where event_id = ?1 " +
+            "and status = 'CONFIRMED'",
+            nativeQuery = true)
+    Integer getConfirmedRequests(Long eventId);
 }

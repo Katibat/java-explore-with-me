@@ -40,6 +40,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiError handleInternalServerError(final Throwable e) {
+        e.printStackTrace();
         return ApiError.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .reason("Error occurred")
@@ -50,7 +51,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError argumentNotValid(final MethodArgumentNotValidException e) {
+    public ApiError handleArgumentNotValid(final MethodArgumentNotValidException e) {
         String objectName = e.getObjectName();
         int errorCount = e.getErrorCount();
         return ApiError.builder()
@@ -63,7 +64,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiError conflict(final DataIntegrityViolationException e) {
+    public ApiError handleConflictException(final DataIntegrityViolationException e) {
         String message = NestedExceptionUtils.getMostSpecificCause(e).getMessage();
         return ApiError.builder()
                 .status(HttpStatus.CONFLICT)

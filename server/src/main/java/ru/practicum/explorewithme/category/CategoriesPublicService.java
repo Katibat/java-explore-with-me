@@ -17,12 +17,13 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class CategoriesPublicService {
     private final CategoryRepository repository;
+    private final CategoryMapper mapper;
 
     public List<CategoryDto> findAll(int from, int size) {
         log.info("PublicCategoriesService: Получение списка категорий.");
         return repository.findAll(PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "id")))
                 .stream()
-                .map(CategoryMapper::toDto)
+                .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -31,6 +32,6 @@ public class CategoriesPublicService {
         Category category = repository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException("PublicCategoriesService: Не найдена категория с id=" +
                         categoryId));
-        return CategoryMapper.toDto(category);
+        return mapper.toDto(category);
     }
 }

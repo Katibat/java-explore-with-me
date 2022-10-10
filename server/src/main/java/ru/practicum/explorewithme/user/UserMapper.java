@@ -1,18 +1,21 @@
 package ru.practicum.explorewithme.user;
 
 import lombok.*;
+import org.springframework.stereotype.Component;
 import ru.practicum.explorewithme.user.model.*;
 
+@Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserMapper {
-    public static User toModel(UserCreateDto userCreateDto) {
+
+    public User toModel(UserCreateDto userCreateDto) {
         return User.builder()
                 .name(userCreateDto.getName())
                 .email(userCreateDto.getEmail())
                 .build();
     }
 
-    public static UserDto toDto(User user) {
+    public UserDto toDto(User user) {
         return UserDto.builder()
                 .id(user.getId())
                 .name(user.getName())
@@ -20,7 +23,7 @@ public class UserMapper {
                 .build();
     }
 
-    public static UserShortDto toShortDto(User user) {
+    public UserShortDto toShortDto(User user) {
         return UserShortDto.builder()
                 .id(user.getId())
                 .name(user.getName())

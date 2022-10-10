@@ -13,24 +13,26 @@ import ru.practicum.explorewithme.exception.NotFoundException;
 @Transactional(readOnly = true)
 public class CategoryAdminService {
     private final CategoryRepository repository;
+    private final CategoryMapper mapper;
 
     @Transactional
     public CategoryDto update(CategoryDto categoryDto) {
-        Category categoryUpdate = repository.findById(categoryDto.getId())
+        Category categoryUpdate = mapper.toUpdate(categoryDto);
+        Category category = repository.findById(categoryDto.getId())
                 .orElseThrow(() ->
                         new NotFoundException("CategoryAdminService: Не найдена категория с id=" + categoryDto.getId()));
-        if (categoryDto.getName() != null) {
-            categoryUpdate.setName(categoryDto.getName());
-        }
+        category.setName(categoryUpdate.getName());
+        Category updated = repository.save(category);
         log.info("CategoryAdminService: Обновлена информация о категории №={}.", categoryDto.getId());
-        return CategoryMapper.toDto(repository.save(categoryUpdate));
+        return mapper.toDto(updated);
     }
 
     @Transactional
     public CategoryDto save(CategoryCreateDto categoryCreateDto) {
         log.info("CategoryAdminService: Сохранение категории с названием={}.", categoryCreateDto.getName());
-        Category category = CategoryMapper.toModel(categoryCreateDto);
-        return CategoryMapper.toDto(repository.save(category));
+        Category category = mapper.toModel(categoryCreateDto);
+        Category saved = repository.save(category);
+        return mapper.toDto(saved);
     }
 
     @Transactional

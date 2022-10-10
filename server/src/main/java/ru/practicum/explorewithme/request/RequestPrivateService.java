@@ -23,6 +23,7 @@ public class RequestPrivateService {
     private final RequestRepository repository;
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final RequestMapper mapper;
 
     public List<RequestDto> findRequests(Long userId) {
         log.info("RequestPrivateService: Получение информации о заявках текущего пользователя id={} " +
@@ -30,7 +31,7 @@ public class RequestPrivateService {
         User user = findUserById(userId);
         return repository.findAllByRequester(userId)
                 .stream()
-                .map(RequestMapper::toDto)
+                .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -54,7 +55,7 @@ public class RequestPrivateService {
         repository.save(request);
         log.info("RequestPrivateService: Сохранена заявка на участие в событии с id={} текущего пользователя с id={}.",
                 eventId, userId);
-        return RequestMapper.toDto(request);
+        return mapper.toDto(request);
     }
 
     @Transactional
@@ -72,7 +73,7 @@ public class RequestPrivateService {
         repository.save(request);
         log.info("RequestPrivateService: Отменена заявка на участие в событии с id={} текущего пользователя с id={}.",
                 request.getEvent(), userId);
-        return RequestMapper.toDto(request);
+        return mapper.toDto(request);
     }
 
     private Request findRequestById(Long requestId) {

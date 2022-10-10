@@ -12,7 +12,6 @@ import ru.practicum.explorewithme.request.*;
 import ru.practicum.explorewithme.request.model.*;
 import ru.practicum.explorewithme.user.UserRepository;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,13 +25,15 @@ public class EventPrivateService {
     private final EventRepository repository;
     private final UserRepository userRepository;
     private final RequestRepository requestRepository;
+    private final EventMapper mapper;
+    private final RequestMapper requestMapper;
 
     public List<EventFullDto> findEventByInitiatorId(Long userId, int from, int size) {
         findUserById(userId);
         Pageable pageable = PageRequest.of(from / size, size);
         return repository.findAllByInitiatorId(userId, pageable)
                 .stream()
-                .map(EventMapper::toFullDto)
+                .map(mapper::toFullDto)
                 .collect(Collectors.toList());
     }
 
@@ -59,26 +60,21 @@ public class EventPrivateService {
         event.setState(EventState.PENDING);
         Event updated = repository.save(event);
         log.info("EventPrivateService: Обновлено событие с id={}.", updated.getId());
-        return EventMapper.toFullDto(updated);
+        return mapper.toFullDto(updated);
     }
 
     @Transactional
     public EventFullDto save(EventCreateDto eventCreateDto, Long userId) {
-        findUserById(userId);
-        if (eventCreateDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ForbiddenException("EventPrivateService: Событие не может быть опубликовано ранее, " +
-                    "чем за 2 часа до начала.");
-        }
-        Event event = EventMapper.toModel(eventCreateDto, userId);
+        Event event = mapper.toModel(eventCreateDto, userId);
         Event saved = repository.save(event);
-        log.info("EventPrivateService: Сохранено событие с id={}.", saved.getId());
-        return EventMapper.toFullDto(saved);
+        log.info("EventPrivateService: Сохранено событие={}.", saved);
+        return mapper.toFullDto(saved);
     }
 
     public EventFullDto findEventInfoByInitiator(Long userId, Long eventId) {
         Event event = findEventById(eventId);
         isInitiator(event, userId);
-        return EventMapper.toFullDto(event);
+        return mapper.toFullDto(event);
     }
 
     @Transactional
@@ -98,7 +94,7 @@ public class EventPrivateService {
         isInitiator(event, userId);
         return requestRepository.findAllByEvent(event.getId())
                 .stream()
-                .map(RequestMapper::toDto)
+                .map(requestMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -120,7 +116,7 @@ public class EventPrivateService {
         if (event.getConfirmedRequests() == event.getParticipantLimit() - 1) {
             requestRepository.rejectPendingRequests(eventId);
         }
-        return RequestMapper.toDto(changed);
+        return requestMapper.toDto(changed);
     }
 
     private Event findEventById(Long eventId) {
@@ -132,7 +128,7 @@ public class EventPrivateService {
     public List<EventShortDto> findEventsByIds(List<Long> ids) { // using in CompilationAdminService
         return repository.findAllById(ids)
                 .stream()
-                .map(EventMapper::toShortDto)
+                .map(mapper::toShortDto)
                 .collect(Collectors.toList());
     }
 

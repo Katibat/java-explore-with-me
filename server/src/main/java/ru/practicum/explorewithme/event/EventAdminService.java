@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class EventAdminService {
     private final EventRepository repository;
+    private final EventMapper mapper;
 
     public List<EventFullDto> searchEvents(List<Long> users,
                                            List<String> states,
@@ -36,7 +37,7 @@ public class EventAdminService {
                 try {
                     eventStates.add(EventState.valueOf(state));
                 } catch (IllegalArgumentException e) {
-                    throw new IncorrectEventStateException("EventAdminService: При поиске списка событий передан " +
+                    throw new EventStateException("EventAdminService: При поиске списка событий передан " +
                             "некорректный статус события.");
                 }
             }
@@ -45,7 +46,7 @@ public class EventAdminService {
         return repository.searchEvents(users, eventStates, categories,
                         rangeStart, rangeEnd, pageable)
                 .stream()
-                .map(EventMapper::toFullDto)
+                .map(mapper::toFullDto)
                 .collect(Collectors.toList());
     }
 
@@ -72,7 +73,7 @@ public class EventAdminService {
         }
         Event updated = repository.save(event);
         log.info("EventAdminService: Обновлено событие с id={}.", updated.getId());
-        return EventMapper.toFullDto(updated);
+        return mapper.toFullDto(updated);
     }
 
     @Transactional
@@ -93,7 +94,7 @@ public class EventAdminService {
             event.setState(EventState.CANCELED);
         }
         Event changed = repository.save(event);
-        return EventMapper.toFullDto(changed);
+        return mapper.toFullDto(changed);
     }
 
     public Event findEventById(Long eventId) { // using in CompilationAdminService

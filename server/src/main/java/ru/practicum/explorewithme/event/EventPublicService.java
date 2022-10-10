@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class EventPublicService {
     private final EventRepository repository;
+    private final EventMapper mapper;
 
     public List<EventShortDto> getEventsSort(String text,
                                              List<Long> categories,
@@ -33,7 +34,7 @@ public class EventPublicService {
         if (rangeStart == null) rangeStart = LocalDateTime.now();
         List<EventFullDto> events = repository.findEvents(text, categories, paid, rangeStart, rangeEnd)
                 .stream()
-                .map(EventMapper::toFullDto)
+                .map(mapper::toFullDto)
                 .collect(Collectors.toList());
         if (onlyAvailable) {
             events = events.stream()
@@ -45,7 +46,7 @@ public class EventPublicService {
             try {
                 extractedSort = EventSort.valueOf(sort);
             } catch (IllegalArgumentException e) {
-                throw new IncorrectSortCriteriaException("EventPublicService: " +
+                throw new EventSortException("EventPublicService: " +
                         "При получени списка событий передан некорректный вид сортировки sort=" + sort);
             }
             switch (extractedSort) {
@@ -64,7 +65,7 @@ public class EventPublicService {
         return events.stream()
                 .skip(from)
                 .limit(size)
-                .map(EventMapper::toShortDtoFromFullDto)
+                .map(mapper::toShortDtoFromFullDto)
                 .collect(Collectors.toList());
     }
 
@@ -77,6 +78,6 @@ public class EventPublicService {
             throw new ForbiddenException("EventPublicService: " +
                     "Запрошена информация о неопубликованом событии с id=" + eventId);
         }
-        return EventMapper.toFullDto(event);
+        return mapper.toFullDto(event);
     }
 }
