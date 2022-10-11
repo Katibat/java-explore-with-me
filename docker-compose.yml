@@ -1,7 +1,7 @@
 version: '3.8'
 services:
 
-  ewm-stats:
+  stats-server:
     build: ./stats
     container_name: stats
     ports:
@@ -31,7 +31,7 @@ services:
     depends_on:
       - ewm-db
     environment:
-      - STATS_SERVER_URL=http://ewm-stats:9090
+      - STATS_SERVER_URL=http://stats-server:9090
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/server
       - POSTGRES_USER=Kate
       - POSTGRES_PASSWORD=purrrrrr
