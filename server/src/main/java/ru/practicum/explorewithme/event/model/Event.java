@@ -2,12 +2,14 @@ package ru.practicum.explorewithme.event.model;
 
 import lombok.*;
 import ru.practicum.explorewithme.category.model.Category;
+import ru.practicum.explorewithme.compilation.model.Compilation;
 import ru.practicum.explorewithme.event.EventState;
 import ru.practicum.explorewithme.event.location.Location;
 import ru.practicum.explorewithme.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -39,7 +41,7 @@ public class Event {
     @Column(name = "published_on")
     private LocalDateTime publishedOn;
     @Column(name = "request_moderation")
-    private boolean requestModeration;
+    private Boolean requestModeration;
     @Enumerated(EnumType.STRING)
     private EventState state;
     @AttributeOverrides({
@@ -47,4 +49,7 @@ public class Event {
             @AttributeOverride(name = "lon", column = @Column(name = "location_lon"))
     })
     private Location location;
+    @ManyToMany(mappedBy = "events")
+    @ToString.Exclude
+    private List<Compilation> compilations;
 }

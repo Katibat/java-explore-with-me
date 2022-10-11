@@ -41,11 +41,6 @@ public class EventPrivateService {
     public EventFullDto update(EventUpdateDto eventUpdateDto, Long userId) {
         Event event = findEventById(eventUpdateDto.getEventId());
         isInitiator(event, userId);
-
-        if (event.getState().equals(EventState.PENDING) || event.getState().equals(CANCELED)) {
-            throw new ForbiddenException("EventPrivateService: Для обновлении передан неверный статус события state=" +
-                    event.getState());
-        }
         if (eventUpdateDto.getTitle() != null) event.setTitle(eventUpdateDto.getTitle());
         if (eventUpdateDto.getAnnotation() != null) event.setAnnotation(eventUpdateDto.getAnnotation());
         if (eventUpdateDto.getDescription() != null) event.setDescription(eventUpdateDto.getDescription());
@@ -80,9 +75,6 @@ public class EventPrivateService {
     @Transactional
     public EventFullDto cancel(Long userId, Long eventId) {
         EventFullDto eventFullDto = findEventInfoByInitiator(userId, eventId);
-        if (eventFullDto.getState().equals("CANCELED")) {
-            throw new ForbiddenException("EventPrivateService: Событие уже отклонено (CANCELED).");
-        }
         repository.cancelEvent(CANCELED, eventId);
         eventFullDto.setState("CANCELED");
         log.info("EventPrivateService: Отменено событие с id={}.", eventFullDto.getId());
@@ -90,9 +82,8 @@ public class EventPrivateService {
     }
 
     public List<RequestDto> getAllRequestsByEventId(Long userId, Long eventId) {
-        Event event = findEventById(eventId);
-        isInitiator(event, userId);
-        return requestRepository.findAllByEvent(event.getId())
+        findEventInfoByInitiator(userId, eventId);
+        return requestRepository.findAllByEventId(eventId)
                 .stream()
                 .map(requestMapper::toDto)
                 .collect(Collectors.toList());
@@ -112,14 +103,15 @@ public class EventPrivateService {
             request.setStatus(RequestStatus.REJECTED);
         }
         Request changed = requestRepository.save(request);
-        log.info("EventPrivateService: Изменен статус заявки на участие в событии с id={}.", changed.getId());
+        log.info("EventPrivateService: Изменен статус заявки №{}, статус={} на участие в событии с id={}.",
+                requestId, changed.getStatus(), changed.getId());
         if (event.getConfirmedRequests() == event.getParticipantLimit() - 1) {
             requestRepository.rejectPendingRequests(eventId);
         }
         return requestMapper.toDto(changed);
     }
 
-    private Event findEventById(Long eventId) {
+    public Event findEventById(Long eventId) {
         return repository.findById(eventId)
                 .orElseThrow(() ->
                         new NotFoundException("EventPrivateService: Не найдено событие с id=" + eventId));
@@ -147,8 +139,8 @@ public class EventPrivateService {
 
     private void isInitiator(Event event, Long userId) {
         if (!Objects.equals(event.getInitiator().getId(), userId)) {
-            throw new ForbiddenException("EventPrivateService: Попытка не инициатором получить информацию " +
-                    "о событии с id=" + event.getId());
+            throw new ForbiddenException("EventPrivateService: Попытка не инициатором внести изменения или получить " +
+                    "информацию о событии с id=" + event.getId());
         }
     }
 }

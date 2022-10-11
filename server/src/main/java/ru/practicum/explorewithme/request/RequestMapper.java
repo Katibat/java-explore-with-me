@@ -11,10 +11,10 @@ public class RequestMapper {
     public RequestDto toDto(Request request) {
         return RequestDto.builder()
                 .id(request.getId())
-                .event(request.getEvent())
-                .requester(request.getRequester())
-                .status(request.getStatus().toString())
                 .created(request.getCreated())
+                .eventId(request.getEventId())
+                .requesterId(request.getRequesterId())
+                .status(request.getStatus())
                 .build();
     }
 }

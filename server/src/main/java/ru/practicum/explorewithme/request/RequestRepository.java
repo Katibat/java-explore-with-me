@@ -11,17 +11,9 @@ import java.util.List;
 
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
-    List<Request> findAllByRequester(Long userId);
+    List<Request> findAllByRequesterId(Long userId);
 
-    List<Request> findAllByEvent(Long eventId);
-
-    @Modifying
-    @Transactional
-    @Query("UPDATE Request AS r " +
-            "SET r.status = 'REJECTED' " +
-            "WHERE r.status = 'PENDING' " +
-            "AND r.event = ?1 ")
-    void rejectPendingRequests(Long eventId);
+    List<Request> findAllByEventId(Long eventId);
 
     @Query(value = "select count(*) " +
             "from requests " +
@@ -29,4 +21,12 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
             "and status = 'CONFIRMED'",
             nativeQuery = true)
     Integer getConfirmedRequests(Long eventId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Request AS r " +
+            "SET r.status = 'REJECTED' " +
+            "WHERE r.status = 'PENDING' " +
+            "AND r.eventId = ?1")
+    void rejectPendingRequests(Long eventId);
 }

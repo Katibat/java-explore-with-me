@@ -10,7 +10,6 @@ public class CategoryMapper {
 
     public Category toModel(CategoryCreateDto categoryCreateDto) {
         return Category.builder()
-                .id(null)
                 .name(categoryCreateDto.getName())
                 .build();
     }

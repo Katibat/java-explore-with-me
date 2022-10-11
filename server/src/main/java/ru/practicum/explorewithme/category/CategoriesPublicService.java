@@ -21,7 +21,7 @@ public class CategoriesPublicService {
 
     public List<CategoryDto> findAll(int from, int size) {
         log.info("PublicCategoriesService: Получение списка категорий.");
-        return repository.findAll(PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "id")))
+        return repository.findAll(PageRequest.of(from / size, size))
                 .stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());

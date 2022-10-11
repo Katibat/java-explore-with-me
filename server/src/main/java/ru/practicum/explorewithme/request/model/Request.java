@@ -17,12 +17,12 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @JoinColumn(name = "event_id")
-    private Long event;
+    @Column(name = "created")
+    private LocalDateTime created;
+    private Long eventId;
     @JoinColumn(name = "requester_id")
-    private Long requester;
+    private Long requesterId;
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private RequestStatus status;
-    @Column(name = "created")
-    private LocalDateTime created;
 }

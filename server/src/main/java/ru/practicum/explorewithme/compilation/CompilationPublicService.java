@@ -5,7 +5,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithme.compilation.model.*;
-import ru.practicum.explorewithme.event.EventPrivateService;
+import ru.practicum.explorewithme.event.EventMapper;
+import ru.practicum.explorewithme.event.model.Event;
 import ru.practicum.explorewithme.event.model.EventShortDto;
 import ru.practicum.explorewithme.exception.NotFoundException;
 
@@ -17,14 +18,13 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class CompilationPublicService {
     private final CompilationRepository repository;
-    private final CompilationEventsRepository compilationEventsRepository;
-    private final EventPrivateService eventPrivateService;
     private final CompilationMapper mapper;
+    private final EventMapper eventMapper;
 
     public List<CompilationDto> findAll(Boolean pinned, int from, int size) {
         return repository.findAllByPinned(pinned, PageRequest.of(from / size, size))
                 .stream()
-                .map(c -> mapper.toDto(c, findCompilationEvents(c.getId())))
+                .map(c -> mapper.toDto(c, findCompilationEvents(c)))
                 .collect(Collectors.toList());
     }
 
@@ -32,11 +32,11 @@ public class CompilationPublicService {
         Compilation compilation = repository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("CompilationPublicService: Не найдена подборка событий " +
                         "с id=" + compId));
-        return mapper.toDto(compilation, findCompilationEvents(compId));
+        return mapper.toDto(compilation, findCompilationEvents(compilation));
     }
 
-    private List<EventShortDto> findCompilationEvents(Long compId) {
-        List<Long> ids = compilationEventsRepository.findCompilationEventIds(compId);
-        return eventPrivateService.findEventsByIds(ids);
+    private List<EventShortDto> findCompilationEvents(Compilation compilation) {
+        List<Event> eventList = new ArrayList<>(compilation.getEvents());
+        return eventList.stream().map(eventMapper::toShortDto).collect(Collectors.toList());
     }
 }
