@@ -15,8 +15,6 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 
     List<Request> findAllByEvent(Long eventId);
 
-    Integer countByEventAndStatus(Long eventId, RequestStatus status);
-
     @Modifying
     @Transactional
     @Query("UPDATE Request AS r " +

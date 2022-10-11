@@ -28,7 +28,6 @@ public class RequestPrivateService {
     public List<RequestDto> findRequests(Long userId) {
         log.info("RequestPrivateService: Получение информации о заявках текущего пользователя id={} " +
                 "на участие в чужих событиях.", userId);
-        User user = findUserById(userId);
         return repository.findAllByRequester(userId)
                 .stream()
                 .map(mapper::toDto)
@@ -36,7 +35,7 @@ public class RequestPrivateService {
     }
 
     @Transactional
-    public RequestDto save(Long eventId, Long userId) {
+    public RequestDto save(Long userId, Long eventId) {
         Event event = findEventById(eventId);
         User user = findUserById(userId);
         checkUserNotEventsInitiator(user, event);
@@ -95,7 +94,7 @@ public class RequestPrivateService {
     }
 
     private void checkRequestsLimit(Event event) {
-        int confirmedRequests = repository.countByEventAndStatus(event.getId(), RequestStatus.CONFIRMED);
+        int confirmedRequests = repository.getConfirmedRequests(event.getId());
         int participantLimit = event.getParticipantLimit();
         if (participantLimit != 0) {
             if (participantLimit <= confirmedRequests) {
