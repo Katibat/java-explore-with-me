@@ -22,7 +22,7 @@
 
     <modules>
         <module>server</module>
-        <module>stats-server</module>
+        <module>stats</module>
     </modules>
 
     <dependencyManagement>
