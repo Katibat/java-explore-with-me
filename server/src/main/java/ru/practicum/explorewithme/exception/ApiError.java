@@ -7,6 +7,10 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Сведения об ошибке
+ */
+
 @Data
 @Builder
 public class ApiError {

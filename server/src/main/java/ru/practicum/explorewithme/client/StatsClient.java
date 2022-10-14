@@ -8,13 +8,17 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * HTTP client для запросов к сервису статистики
+ */
+
 @Service
 public class StatsClient extends BaseClient {
     @Value("${app-name}")
     private String appName;
 
     @Autowired
-    public StatsClient(@Value("http://localhost:9090") String serverUrl, RestTemplateBuilder builder) {
+    public StatsClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
         super(
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))

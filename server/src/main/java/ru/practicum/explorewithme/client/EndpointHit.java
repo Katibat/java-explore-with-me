@@ -5,6 +5,10 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * Эндроинт к сервису статистики
+ */
+
 @Data
 @NoArgsConstructor
 public class EndpointHit {
