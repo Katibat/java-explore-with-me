@@ -109,25 +109,15 @@ public class RequestPrivateServiceImpl implements RequestPrivateService {
                         new NotFoundException("RequestPrivateService: Не найден запрос с id=" + requestId));
     }
 
-    /**
-     * Искать в репозитории пользователя по идентификатору
-     * если не найден, то вернуть NotFoundException
-     * @param userId идентификатор пользователя
-     * @return User
-     */
-    private User findUserById(Long userId) {
+    @Override
+    public User findUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() ->
                         new NotFoundException("RequestPrivateService: Не найден пользователь с id=" + userId));
     }
 
-    /**
-     * Искать в репозитории события по идентификатору
-     * если не найден, то вернуть NotFoundException
-     * @param eventId идентификатор события
-     * @return Event
-     */
-    private Event findEventById(Long eventId) {
+    @Override
+    public Event findEventById(Long eventId) {
         return eventRepository.findById(eventId)
                 .orElseThrow(() ->
                         new NotFoundException("RequestPrivateService: Не найдено событие с id=" + eventId));

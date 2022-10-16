@@ -72,12 +72,4 @@ public interface EventPrivateService {
      * @return RequestDto
      */
     RequestDto changeRequestStatus(Long userId, Long eventId, Long requestId, boolean isApproved);
-
-    /**
-     * Искать событие по идентификатору
-     * если не найден, то вернуть NotFoundException
-     * @param eventId идентификатор события
-     * @return Event
-     */
-    Event findEventById(Long eventId);
 }
