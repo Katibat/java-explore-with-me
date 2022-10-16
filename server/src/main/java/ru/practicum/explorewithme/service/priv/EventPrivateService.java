@@ -4,7 +4,6 @@ import ru.practicum.explorewithme.dto.event.EventCreateDto;
 import ru.practicum.explorewithme.dto.event.EventFullDto;
 import ru.practicum.explorewithme.dto.event.EventUpdateDto;
 import ru.practicum.explorewithme.dto.request.RequestDto;
-import ru.practicum.explorewithme.model.event.Event;
 
 import java.util.List;
 
