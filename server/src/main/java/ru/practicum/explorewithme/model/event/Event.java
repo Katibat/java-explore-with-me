@@ -55,7 +55,7 @@ public class Event {
     @ManyToMany(mappedBy = "events")
     @ToString.Exclude
     private List<Compilation> compilations;
-    @ManyToMany(mappedBy = "events")
-    @ToString.Exclude
+    @OneToMany
+    @JoinColumn(name = "event_id")
     private List<Comment> comments;
 }

@@ -2,12 +2,12 @@ package ru.practicum.explorewithme.controller.pub;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.explorewithme.client.StatsClient;
 import ru.practicum.explorewithme.dto.comment.CommentDto;
+import ru.practicum.explorewithme.dto.event.EventFullDto;
 import ru.practicum.explorewithme.service.pub.CommentPublicService;
 
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Публичный API для просмотра отзывов на события
@@ -18,12 +18,13 @@ import java.util.List;
 @RequestMapping(path = "/events")
 public class CommentPublicController {
     private final CommentPublicService service;
+    private final StatsClient client;
 
-    @GetMapping("/{eventId}/comments") // Получить список комментариев на событие с параметрами
-    public List<CommentDto> getEventComments(@PathVariable Long eventId,
-                                             @PositiveOrZero @RequestParam(defaultValue = "0") int from,
-                                             @Positive @RequestParam(defaultValue = "10") int size) {
-        return service.findAllComments(eventId, from, size);
+    @GetMapping("/{eventId}/comments") // Получить событие с отзывами + 1 hit в статистику
+    public EventFullDto getEventWithComments(@PathVariable Long eventId,
+                                             HttpServletRequest request) {
+        client.save(request);
+        return service.getEventWithAllComments(eventId);
     }
 
     @GetMapping("/{eventId}/comments/{commentId}")

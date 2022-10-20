@@ -1,5 +1,6 @@
 package ru.practicum.explorewithme.dto.comment;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -22,5 +23,6 @@ public class CommentDto {
     private Long eventId;
     private Long authorId;
     private Boolean edited;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created = LocalDateTime.now();
 }

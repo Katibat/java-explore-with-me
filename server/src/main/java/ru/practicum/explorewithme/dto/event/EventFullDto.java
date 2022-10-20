@@ -38,8 +38,4 @@ public class EventFullDto {
     private String title;
     private Integer views;
     private List<CommentDto> comments;
-
-    public void setComments(List<CommentDto> comments) {
-        this.comments = comments;
-    }
 }

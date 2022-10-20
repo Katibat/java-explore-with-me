@@ -5,10 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithme.dto.comment.CommentDto;
+import ru.practicum.explorewithme.dto.event.EventFullDto;
 import ru.practicum.explorewithme.exception.ForbiddenException;
 import ru.practicum.explorewithme.exception.NotFoundException;
 import ru.practicum.explorewithme.mapper.CommentMapper;
+import ru.practicum.explorewithme.mapper.EventMapper;
 import ru.practicum.explorewithme.model.comment.Comment;
+import ru.practicum.explorewithme.model.event.Event;
 import ru.practicum.explorewithme.repository.CommentRepository;
 import ru.practicum.explorewithme.service.priv.RequestPrivateService;
 import ru.practicum.explorewithme.service.pub.CommentPublicService;
@@ -25,16 +28,17 @@ public class CommentPublicServiceImpl implements CommentPublicService {
     private final CommentRepository repository;
     private final RequestPrivateService requestPrivateService;
     private final CommentMapper mapper;
-
+    private final EventMapper eventMapper;
 
     @Override
-    public List<CommentDto> findAllComments(Long eventId, int from, int size) {
-        requestPrivateService.findEventById(eventId);
-        log.info("CommentPrivateService: Запрошен список отзывов на событие с id={}.", eventId);
-        return repository.findAllCommentsByEventId(eventId)
+    public EventFullDto getEventWithAllComments(Long eventId) {
+        log.info("CommentPrivateService: Запрошено событие с id={} с полным списком отзывов.", eventId);
+        Event event = requestPrivateService.findEventById(eventId);
+        List<CommentDto> comments = repository.findAllCommentsByEventId(eventId)
                 .stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
+        return eventMapper.toFullDtoWithComments(event, comments);
     }
 
     @Override

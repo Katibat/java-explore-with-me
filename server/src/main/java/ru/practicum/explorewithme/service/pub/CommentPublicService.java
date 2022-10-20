@@ -1,8 +1,7 @@
 package ru.practicum.explorewithme.service.pub;
 
 import ru.practicum.explorewithme.dto.comment.CommentDto;
-
-import java.util.List;
+import ru.practicum.explorewithme.dto.event.EventFullDto;
 
 /**
  * Реализация публичного API для просмотра отзывов на события
@@ -11,13 +10,11 @@ import java.util.List;
 public interface CommentPublicService {
 
     /**
-     * Получить список отзыв на событие с параметрами
+     * Получить событие со всеми отзывами
      * @param eventId идентификатор события
-     * @param from количество объектов, default value = 0
-     * @param size размер страницы default value = 10
-     * @return List<CommentDto>
+     * @return EventFullDto
      */
-    List<CommentDto> findAllComments(Long eventId, int from, int size);
+    EventFullDto getEventWithAllComments(Long eventId);
 
     /**
      * Получить отзыв на событие по идентификатору
