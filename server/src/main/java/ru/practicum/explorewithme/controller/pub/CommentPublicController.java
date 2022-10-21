@@ -2,7 +2,6 @@ package ru.practicum.explorewithme.controller.pub;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explorewithme.client.StatsClient;
 import ru.practicum.explorewithme.dto.comment.CommentDto;
 import ru.practicum.explorewithme.service.pub.CommentPublicService;
 
