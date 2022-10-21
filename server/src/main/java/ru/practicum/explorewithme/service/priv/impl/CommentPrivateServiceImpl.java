@@ -43,8 +43,8 @@ public class CommentPrivateServiceImpl implements CommentPrivateService {
 
     @Transactional
     @Override
-    public CommentDto update(CommentUpdateDto commentUpdateDto, Long userId, Long eventId) {
-        Comment comment = findCommentById(commentUpdateDto.getId());
+    public CommentDto update(CommentUpdateDto commentUpdateDto, Long userId, Long eventId, Long commentId) {
+        Comment comment = findCommentById(commentId);
         if (!Objects.equals(comment.getEvent().getId(), eventId)) {
             throw new ForbiddenException("CommentPrivateService: Для обновления отзыва неверно указан идентификатор " +
                     "события id=" + eventId);

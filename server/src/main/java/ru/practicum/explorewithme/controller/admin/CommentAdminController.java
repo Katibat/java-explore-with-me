@@ -10,16 +10,15 @@ import ru.practicum.explorewithme.service.admin.CommentAdminService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/admin/comments")
 public class CommentAdminController {
     private final CommentAdminService service;
 
-    @DeleteMapping("{commentId}") // удалить отзыв на событие
+    @DeleteMapping("/admin/comments/{commentId}") // удалить отзыв на событие
     public void delete(@PathVariable Long commentId) {
         service.delete(commentId);
     }
 
-    @DeleteMapping // удалить все отзывы по идентификатору события
+    @DeleteMapping ("/admin/events/{eventId}")// удалить все отзывы по идентификатору события
     public void deleteAllCommentsByEvent(@PathVariable Long eventId) {
         service.deleteAllCommentsByEvent(eventId);
     }

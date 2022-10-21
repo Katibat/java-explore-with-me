@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.explorewithme.dto.comment.CommentDto;
 import ru.practicum.explorewithme.dto.event.EventFullDto;
 import ru.practicum.explorewithme.dto.event.EventShortDto;
+import ru.practicum.explorewithme.mapper.CommentMapper;
 import ru.practicum.explorewithme.mapper.EventMapper;
+import ru.practicum.explorewithme.repository.CommentRepository;
 import ru.practicum.explorewithme.repository.EventRepository;
 import ru.practicum.explorewithme.exception.*;
 import ru.practicum.explorewithme.model.event.Event;
@@ -24,7 +27,9 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class EventPublicServiceImpl implements EventPublicService {
     private final EventRepository repository;
+    private final CommentRepository commentRepository;
     private final EventMapper mapper;
+    private final CommentMapper commentMapper;
 
     @Override
     public List<EventShortDto> getEventsSort(String text,
@@ -88,5 +93,18 @@ public class EventPublicServiceImpl implements EventPublicService {
                     "Запрошена информация о неопубликованом событии с id=" + eventId);
         }
         return mapper.toFullDto(event);
+    }
+
+    @Override
+    public EventFullDto getEventWithAllComments(Long eventId) {
+        log.info("CommentPrivateService: Запрошено событие с id={} с полным списком отзывов.", eventId);
+        Event event = repository.findById(eventId)
+                .orElseThrow(() ->
+                        new NotFoundException("EventPublicService: Не найдено событие с id=" + eventId));
+        List<CommentDto> comments = commentRepository.findAllCommentsByEventId(eventId)
+                .stream()
+                .map(commentMapper::toDto)
+                .collect(Collectors.toList());
+        return mapper.toFullDtoWithComments(event, comments);
     }
 }

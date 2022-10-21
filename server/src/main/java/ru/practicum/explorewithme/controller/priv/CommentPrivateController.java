@@ -20,21 +20,23 @@ import java.util.List;
 public class CommentPrivateController {
     private final CommentPrivateService service;
 
-    @PostMapping("/{userId}/events/{eventId}/comment") // Добавление нового отзыва о событии текущим пользователем
+    @PostMapping("/{userId}/events/{eventId}/comments") // Добавление нового отзыва о событии текущим пользователем
     public CommentDto save(@Valid @RequestBody CommentCreateDto commentCreateDto,
                            @PathVariable Long userId,
                            @PathVariable Long eventId) {
         return service.save(commentCreateDto, userId, eventId);
     }
 
-    @PatchMapping("/{userId}/events/{eventId}/comment") // изменение отзыва на событие текущим пользователем
+    // изменение отзыва на событие текущим пользователем
+    @PatchMapping("/{userId}/events/{eventId}/comments/{commentId}")
     public CommentDto update(@Valid @RequestBody CommentUpdateDto commentUpdateDto,
                              @PathVariable Long userId,
-                             @PathVariable Long eventId) {
-        return service.update(commentUpdateDto, userId, eventId);
+                             @PathVariable Long eventId,
+                             @PathVariable Long commentId) {
+        return service.update(commentUpdateDto, userId, eventId, commentId);
     }
 
-    @DeleteMapping("/{userId}/events/{eventId}/comment/{commentId}") // удаление отзыва на событие тек.пользователем
+    @DeleteMapping("/{userId}/events/{eventId}/comments/{commentId}") // удаление отзыва на событие тек.пользователем
     public void delete(@PathVariable Long userId,
                                      @PathVariable Long eventId,
                                      @PathVariable Long commentId) {

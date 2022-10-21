@@ -4,10 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.client.StatsClient;
 import ru.practicum.explorewithme.dto.comment.CommentDto;
-import ru.practicum.explorewithme.dto.event.EventFullDto;
 import ru.practicum.explorewithme.service.pub.CommentPublicService;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+import java.util.List;
 
 /**
  * Публичный API для просмотра отзывов на события
@@ -15,21 +16,18 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/events")
+@RequestMapping(path = "/comments")
 public class CommentPublicController {
     private final CommentPublicService service;
-    private final StatsClient client;
 
-    @GetMapping("/{eventId}/comments") // Получить событие с отзывами + 1 hit в статистику
-    public EventFullDto getEventWithComments(@PathVariable Long eventId,
-                                             HttpServletRequest request) {
-        client.save(request);
-        return service.getEventWithAllComments(eventId);
+    @GetMapping // Получение списка отзывов на события
+    public List<CommentDto> findAll(@PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                     @Positive @RequestParam(defaultValue = "10") int size) {
+        return service.findAll(from, size);
     }
 
-    @GetMapping("/{eventId}/comments/{commentId}")
-    public CommentDto getEventComment(@PathVariable Long eventId,
-                                      @PathVariable Long commentId) {
-        return service.findCommentById(eventId, commentId);
+    @GetMapping("/{commentId}")
+    public CommentDto getEventComment(@PathVariable Long commentId) {
+        return service.findCommentById(commentId);
     }
 }

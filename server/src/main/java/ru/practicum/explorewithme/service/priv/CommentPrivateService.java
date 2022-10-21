@@ -27,9 +27,10 @@ public interface CommentPrivateService {
      * @param commentUpdateDto объект измененного отзыва
      * @param userId идентификатор текущего пользователя
      * @param eventId идентификатор события
+     * @param commentId идентификатор отзыва на событие
      * @return CommentDto
      */
-    CommentDto update(CommentUpdateDto commentUpdateDto, Long userId, Long eventId);
+    CommentDto update(CommentUpdateDto commentUpdateDto, Long userId, Long eventId, Long commentId);
 
     /**
      * Удалить отзыв на событие его автором
