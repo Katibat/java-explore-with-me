@@ -14,11 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class StatsClient extends BaseClient {
-    @Value("explore-with-me-server")
+    @Value("${app-name}")
     private String appName;
 
     @Autowired
-    public StatsClient(@Value("http://stats-server:9090") String serverUrl, RestTemplateBuilder builder) {
+    public StatsClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
         super(
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))

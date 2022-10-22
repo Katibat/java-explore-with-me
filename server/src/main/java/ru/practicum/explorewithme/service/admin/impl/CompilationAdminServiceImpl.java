@@ -64,6 +64,7 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
                         eventId, compId);
             }
         }
+        compilation.setEvents(events);
         repository.save(compilation);
     }
 
