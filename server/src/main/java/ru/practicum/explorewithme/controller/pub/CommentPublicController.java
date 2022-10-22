@@ -25,7 +25,7 @@ public class CommentPublicController {
         return service.findAll(from, size);
     }
 
-    @GetMapping("/{commentId}")
+    @GetMapping("/{commentId}") // Получить отзыв на событие по идентификатору
     public CommentDto getEventComment(@PathVariable Long commentId) {
         return service.findCommentById(commentId);
     }

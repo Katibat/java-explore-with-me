@@ -20,7 +20,7 @@ public interface CompilationAdminService {
      * Удалить подборку событий
      * @param compId идентификатор подборки событий
      */
-    void delete(Long compId);
+    void deleteById(Long compId);
 
     /**
      * Сохранить или удалить событие в подборке событий

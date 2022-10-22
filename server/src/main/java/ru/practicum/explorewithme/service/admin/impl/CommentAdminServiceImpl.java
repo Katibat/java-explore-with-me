@@ -19,7 +19,7 @@ public class CommentAdminServiceImpl implements CommentAdminService {
 
     @Transactional
     @Override
-    public void delete(Long commentId) {
+    public void deleteById(Long commentId) {
         repository.deleteById(commentId);
         log.info("CommentAdminService: Удален отзыв c id={}.", commentId);
     }
@@ -29,8 +29,13 @@ public class CommentAdminServiceImpl implements CommentAdminService {
     public void deleteAllCommentsByEvent(Long eventId) {
         List<Comment> comments = repository.findAllCommentsByEventId(eventId);
         for (Comment c : comments) {
-            comments.remove(c);
+            repository.deleteById(c.getId());
         }
         log.info("CommentAdminService: Удалены все отзывы на событие c id={}.", eventId);
+    }
+
+    @Override
+    public List<Comment> findAllCommentsByEventId(Long eventId) {
+        return repository.findAllCommentsByEventId(eventId);
     }
 }

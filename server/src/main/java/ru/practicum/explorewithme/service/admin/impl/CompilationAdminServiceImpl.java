@@ -40,12 +40,8 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
 
     @Transactional
     @Override
-    public void delete(Long compId) {
-        Compilation compilation = repository.findById(compId)
-                .orElseThrow(() ->
-                        new NotFoundException("CompilationAdminService: Не найдена подборка событий с id=" +
-                                compId));
-        repository.delete(compilation);
+    public void deleteById(Long compId) {
+        repository.deleteById(compId);
         log.info("CompilationAdminService: Удалена информация о подборке событий №={}.", compId);
     }
 

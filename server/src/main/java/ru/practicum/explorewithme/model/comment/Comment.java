@@ -30,6 +30,7 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "author_id")
     private User author;
+    @JoinColumn(name = "edited")
     private Boolean edited;
     @Column(name = "created")
     private LocalDateTime created = LocalDateTime.now();
