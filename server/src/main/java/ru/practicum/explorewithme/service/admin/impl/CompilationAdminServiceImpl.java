@@ -50,17 +50,16 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
     public void saveOrDeleteEventInCompilation(Long compId, Long eventId, boolean isDeleting) {
         Compilation compilation = findCompilationById(compId);
         Event event = findEventById(eventId);
-        List<Event> events = findCompilationEvents(compilation)
-                .stream().map(eventMapper::toModelFromShortDto).collect(Collectors.toList());
+        Set<Event> events = compilation.getEvents();
         if (isDeleting) {
             if (events.contains(event)) {
-                compilation.getEvents().remove(event);
+                events.remove(event);
                 log.info("CompilationAdminService: Удалено событие с id={} из подборки событий с id={}.",
                         eventId, compId);
             }
         } else {
             if (!events.contains(event)) {
-                compilation.getEvents().add(event);
+                events.add(event);
                 log.info("CompilationAdminService: Добавлено событие с id={} в подборку событий с id={}.",
                         eventId, compId);
             }
