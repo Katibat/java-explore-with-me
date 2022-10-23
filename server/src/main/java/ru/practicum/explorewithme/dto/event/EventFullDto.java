@@ -3,9 +3,11 @@ package ru.practicum.explorewithme.dto.event;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import ru.practicum.explorewithme.dto.category.CategoryDto;
+import ru.practicum.explorewithme.dto.comment.CommentDto;
 import ru.practicum.explorewithme.dto.user.UserShortDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Полная информация о событии
@@ -35,4 +37,5 @@ public class EventFullDto {
     private String state;
     private String title;
     private Integer views;
+    private List<CommentDto> comments;
 }

@@ -1,6 +1,8 @@
 package ru.practicum.explorewithme.service.priv;
 
 import ru.practicum.explorewithme.dto.request.RequestDto;
+import ru.practicum.explorewithme.model.event.Event;
+import ru.practicum.explorewithme.model.user.User;
 
 import java.util.List;
 
@@ -33,4 +35,20 @@ public interface RequestPrivateService {
      * @return RequestDto
      */
     RequestDto cancelRequest(Long userId, Long requestId);
+
+    /**
+     * Искать в репозитории пользователя по идентификатору
+     * если не найден, то вернуть NotFoundException
+     * @param userId идентификатор пользователя
+     * @return User
+     */
+    User findUserById(Long userId);
+
+    /**
+     * Искать в репозитории события по идентификатору
+     * если не найден, то вернуть NotFoundException
+     * @param eventId идентификатор события
+     * @return Event
+     */
+    Event findEventById(Long eventId);
 }

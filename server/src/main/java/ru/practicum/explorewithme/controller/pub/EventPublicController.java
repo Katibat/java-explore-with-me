@@ -45,4 +45,11 @@ public class EventPublicController {
         client.save(request);
         return service.findEventById(eventId);
     }
+
+    @GetMapping("/{eventId}/comments") // Получить событие с отзывами + 1 hit в статистику
+    public EventFullDto getEventWithComments(@PathVariable Long eventId,
+                                             HttpServletRequest request) {
+        client.save(request);
+        return service.getEventWithAllComments(eventId);
+    }
 }

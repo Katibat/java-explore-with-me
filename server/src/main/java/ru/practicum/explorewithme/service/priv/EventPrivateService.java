@@ -4,7 +4,6 @@ import ru.practicum.explorewithme.dto.event.EventCreateDto;
 import ru.practicum.explorewithme.dto.event.EventFullDto;
 import ru.practicum.explorewithme.dto.event.EventUpdateDto;
 import ru.practicum.explorewithme.dto.request.RequestDto;
-import ru.practicum.explorewithme.model.event.Event;
 
 import java.util.List;
 
@@ -72,12 +71,4 @@ public interface EventPrivateService {
      * @return RequestDto
      */
     RequestDto changeRequestStatus(Long userId, Long eventId, Long requestId, boolean isApproved);
-
-    /**
-     * Искать событие по идентификатору
-     * если не найден, то вернуть NotFoundException
-     * @param eventId идентификатор события
-     * @return Event
-     */
-    Event findEventById(Long eventId);
 }

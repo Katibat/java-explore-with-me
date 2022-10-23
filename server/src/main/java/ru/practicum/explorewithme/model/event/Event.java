@@ -2,6 +2,7 @@ package ru.practicum.explorewithme.model.event;
 
 import lombok.*;
 import ru.practicum.explorewithme.model.category.Category;
+import ru.practicum.explorewithme.model.comment.Comment;
 import ru.practicum.explorewithme.model.compilation.Compilation;
 import ru.practicum.explorewithme.model.user.User;
 
@@ -54,4 +55,7 @@ public class Event {
     @ManyToMany(mappedBy = "events")
     @ToString.Exclude
     private List<Compilation> compilations;
+    @OneToMany
+    @JoinColumn(name = "event_id")
+    private List<Comment> comments;
 }

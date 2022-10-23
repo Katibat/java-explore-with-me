@@ -2,6 +2,7 @@ package ru.practicum.explorewithme.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.practicum.explorewithme.dto.comment.CommentDto;
 import ru.practicum.explorewithme.model.category.Category;
 import ru.practicum.explorewithme.dto.category.CategoryDto;
 import ru.practicum.explorewithme.client.StatsClient;
@@ -16,6 +17,7 @@ import ru.practicum.explorewithme.model.user.User;
 import ru.practicum.explorewithme.dto.user.UserShortDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -98,6 +100,28 @@ public class EventMapper {
                 .paid(eventFullDto.getPaid())
                 .title(eventFullDto.getTitle())
                 .views(eventFullDto.getViews())
+                .build();
+    }
+
+    public EventFullDto toFullDtoWithComments(Event event, List<CommentDto> comments) {
+        return EventFullDto.builder()
+                .id(event.getId())
+                .annotation(event.getAnnotation())
+                .description(event.getDescription())
+                .createdOn(event.getCreatedOn())
+                .eventDate(event.getEventDate())
+                .location(LocationMapper.toDto(event.getLocation()))
+                .confirmedRequests(requestRepository.getConfirmedRequests(event.getId()))
+                .category(new CategoryDto(event.getCategory().getId(), event.getCategory().getName()))
+                .initiator(new UserShortDto(event.getInitiator().getId(), event.getInitiator().getName()))
+                .paid(event.getPaid())
+                .participantLimit(event.getParticipantLimit())
+                .publishedOn(event.getPublishedOn())
+                .requestModeration(event.getRequestModeration())
+                .state(event.getState().toString())
+                .title(event.getTitle())
+                .views(getViews(event.getId()))
+                .comments(comments)
                 .build();
     }
 

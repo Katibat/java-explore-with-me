@@ -25,7 +25,7 @@ public class CompilationAdminController {
 
     @DeleteMapping("/{compId}") // удаление подборки
     public void delete(@PathVariable Long compId) {
-        service.delete(compId);
+        service.deleteById(compId);
     }
 
     @DeleteMapping("/{compId}/events/{eventId}") // удалить событие из подборки

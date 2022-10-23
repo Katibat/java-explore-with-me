@@ -128,8 +128,13 @@ public class EventPrivateServiceImpl implements EventPrivateService {
         return requestMapper.toDto(changed);
     }
 
-    @Override
-    public Event findEventById(Long eventId) {
+    /**
+     * Искать событие по идентификатору
+     * если не найден, то вернуть NotFoundException
+     * @param eventId идентификатор события
+     * @return Event
+     */
+    private Event findEventById(Long eventId) {
         return repository.findById(eventId)
                 .orElseThrow(() ->
                         new NotFoundException("EventPrivateService: Не найдено событие с id=" + eventId));

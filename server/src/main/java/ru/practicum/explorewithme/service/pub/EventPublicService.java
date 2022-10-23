@@ -45,4 +45,11 @@ public interface EventPublicService {
      * @return EventFullDto
      */
     EventFullDto findEventById(Long eventId);
+
+    /**
+     * Получить полную информацию о событии со списком отзывов и добавить 1 hit в Stats
+     * @param eventId идентификатор события
+     * @return EventFullDto
+     */
+    EventFullDto getEventWithAllComments(Long eventId);
 }
